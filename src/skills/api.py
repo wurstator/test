@@ -5,10 +5,11 @@ from typing import Optional
 from Bio import Entrez, Medline
 from scholarly import scholarly
 from ..models.paper import Paper
+from ..config import config
 
 
 # Set email for Entrez (required by NCBI)
-Entrez.email = "research@example.com"  # Should be configurable
+Entrez.email = config.entrez_email
 
 
 def search_pubmed(query: str, max_results: int = 20) -> list[Paper]:
