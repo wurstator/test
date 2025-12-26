@@ -37,9 +37,10 @@ uv.lock
 *.swo
 *~
 
-# Environment
+# Environment (secrets)
 .env
 .env.local
+# Note: .env.example and .env.default are tracked (no secrets)
 
 # Output
 output/

@@ -1,0 +1,38 @@
+{
+  "project": {
+    "name": "scientific-literature-agent",
+    "description": "LangGraph-based scientific literature search and summarization agent",
+    "type": "python"
+  },
+  "settings": {
+    "python": {
+      "package_manager": "uv",
+      "version": ">=3.11"
+    },
+    "testing": {
+      "framework": "pytest",
+      "command": "uv run pytest"
+    },
+    "linting": {
+      "tools": ["black", "ruff"],
+      "format_command": "uv run black src/",
+      "lint_command": "uv run ruff check src/"
+    }
+  },
+  "context": {
+    "important_files": [
+      "src/graph.py",
+      "src/models/state.py",
+      "src/agents/*.py",
+      "src/prompts/*.md",
+      "ARCHITECTURE.md",
+      "README.md"
+    ],
+    "exclude_patterns": [
+      "__pycache__",
+      "*.pyc",
+      ".venv",
+      "output/"
+    ]
+  }
+}
