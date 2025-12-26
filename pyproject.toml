@@ -1,0 +1,27 @@
+[project]
+name = "scientific-literature-agent"
+version = "0.1.0"
+description = "LangGraph agent for searching and summarizing scientific literature from Google Scholar and PubMed"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "litellm>=1.48.0",
+    "pydantic>=2.9.0",
+    "scholarly>=1.7.11",
+    "biopython>=1.84",
+    "pypdf>=5.1.0",
+    "requests>=2.32.0",
+    "python-dotenv>=1.0.0",
+    "aiohttp>=3.10.0",
+    "rich>=13.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "black>=24.0.0",
+    "ruff>=0.7.0",
+]
