@@ -9,7 +9,7 @@ from litellm import completion
 
 # Configure LiteLLM
 litellm.drop_params = True  # Drop unsupported params
-litellm.set_verbose = os.getenv("LITELLM_VERBOSE", "false").lower() == "true"
+litellm.set_verbose = os.getenv("LITELLM_VERBOSE", "false").lower() == "true"  # type: ignore
 
 
 def load_prompt_template(template_name: str) -> str:
@@ -92,15 +92,15 @@ def call_llm(
     try:
         response = completion(**call_kwargs)
 
-        content = response.choices[0].message.content
+        content = response.choices[0].message.content  # type: ignore
         metadata = {
             "model": response.model,
-            "total_tokens": getattr(response.usage, "total_tokens", None),
-            "prompt_tokens": getattr(response.usage, "prompt_tokens", None),
-            "completion_tokens": getattr(response.usage, "completion_tokens", None),
+            "total_tokens": getattr(response.usage, "total_tokens", None),  # type: ignore
+            "prompt_tokens": getattr(response.usage, "prompt_tokens", None),  # type: ignore
+            "completion_tokens": getattr(response.usage, "completion_tokens", None),  # type: ignore
         }
 
-        return content, metadata
+        return content or "", metadata  # type: ignore
 
     except Exception as e:
         raise Exception(f"LLM call failed: {str(e)}") from e

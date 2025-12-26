@@ -25,25 +25,23 @@ def format_output(result) -> str:
     sections = []
 
     # Header
-    sections.append(f"# Literature Search Results\n")
+    sections.append("# Literature Search Results\n")
     sections.append(f"**Query**: {result.query}\n")
 
     # Search Statistics
     if result.search_metadata:
         meta = result.search_metadata
-        sections.append(f"\n## Search Statistics")
+        sections.append("\n## Search Statistics")
         sections.append(f"- PubMed results: {meta.pubmed_count}")
         sections.append(f"- Google Scholar results: {meta.scholar_count}")
         sections.append(f"- Total unique papers: {meta.total_results}")
         sections.append(f"- Duplicates removed: {meta.duplicates_removed}")
-        sections.append(
-            f"- Search time: {meta.execution_time_seconds:.2f} seconds\n"
-        )
+        sections.append(f"- Search time: {meta.execution_time_seconds:.2f} seconds\n")
 
     # Retrieval Statistics
     if result.retrieval_stats:
         stats = result.retrieval_stats
-        sections.append(f"\n## Retrieval Statistics")
+        sections.append("\n## Retrieval Statistics")
         sections.append(f"- Documents attempted: {stats.attempted}")
         sections.append(f"- Full text retrieved: {stats.fulltext_retrieved}")
         sections.append(f"- Abstracts retrieved: {stats.abstract_retrieved}")
@@ -55,30 +53,28 @@ def format_output(result) -> str:
 
     # Summary
     if result.summary:
-        sections.append(f"\n---\n")
+        sections.append("\n---\n")
         sections.append(result.summary)
 
     # Literature Section
     if result.literature_section:
-        sections.append(f"\n\n---\n")
+        sections.append("\n\n---\n")
         sections.append(result.literature_section)
 
     # Generation Statistics
     if result.generation_metadata:
         meta = result.generation_metadata
-        sections.append(f"\n\n## Generation Statistics")
+        sections.append("\n\n## Generation Statistics")
         sections.append(f"- Model: {meta.model_used}")
         if meta.total_tokens:
             sections.append(f"- Total tokens: {meta.total_tokens:,}")
             sections.append(f"- Prompt tokens: {meta.prompt_tokens:,}")
             sections.append(f"- Completion tokens: {meta.completion_tokens:,}")
-        sections.append(
-            f"- Generation time: {meta.execution_time_seconds:.2f} seconds"
-        )
+        sections.append(f"- Generation time: {meta.execution_time_seconds:.2f} seconds")
 
     # Errors
     if result.errors:
-        sections.append(f"\n\n## Errors/Warnings")
+        sections.append("\n\n## Errors/Warnings")
         for error in result.errors:
             sections.append(f"- {error}")
 
@@ -126,8 +122,8 @@ def main():
             Panel(
                 "[red]Error:[/red] No search query provided.\n\n"
                 "[yellow]Usage:[/yellow]\n"
-                "  python -m src.main \"your search query\"\n"
-                "  python -m src.main \"CRISPR gene editing\"\n\n"
+                '  python -m src.main "your search query"\n'
+                '  python -m src.main "CRISPR gene editing"\n\n'
                 "[yellow]Environment Variables:[/yellow]\n"
                 "  LLM_MODEL - Default: mistral/mistral-small-latest\n"
                 "  MAX_RESULTS - Default: 20\n"

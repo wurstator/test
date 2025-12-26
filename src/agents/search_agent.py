@@ -6,7 +6,7 @@ from ..skills.api import search_pubmed, search_scholar
 from ..skills.document import deduplicate_results
 
 
-def search_literature(state: AgentState) -> dict:
+def search_literature(state: AgentState) -> AgentState:
     """
     Execute parallel searches on PubMed and Google Scholar.
 
@@ -14,7 +14,7 @@ def search_literature(state: AgentState) -> dict:
         state: Current agent state containing query and max_results
 
     Returns:
-        State update dict with search_results and search_metadata
+        Updated AgentState with search_results and search_metadata
     """
     start_time = time.time()
 
@@ -56,8 +56,10 @@ def search_literature(state: AgentState) -> dict:
         execution_time_seconds=execution_time,
     )
 
-    return {
-        "search_results": unique_results,
-        "search_metadata": metadata,
-        "errors": errors,
-    }
+    return state.model_copy(
+        update={
+            "search_results": unique_results,
+            "search_metadata": metadata,
+            "errors": state.errors + errors,
+        }
+    )

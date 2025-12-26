@@ -1,6 +1,6 @@
 """Pydantic models for LangGraph state management."""
 
-from typing import Optional, Annotated
+from typing import Optional
 from pydantic import BaseModel, Field
 from .paper import Paper, Document, Citation
 

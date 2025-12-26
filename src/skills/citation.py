@@ -114,9 +114,7 @@ def create_citation(paper: Paper) -> Citation:
     citation_text = format_citation_apa(paper)
     in_text = create_in_text_citation(paper)
 
-    return Citation(
-        paper=paper, citation_text=citation_text, in_text_citation=in_text
-    )
+    return Citation(paper=paper, citation_text=citation_text, in_text_citation=in_text)
 
 
 def generate_references_section(citations: list[Citation]) -> str:

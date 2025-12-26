@@ -1,6 +1,5 @@
 """LangGraph workflow definition for scientific literature agent."""
 
-from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from .models.state import AgentState
 from .agents.search_agent import search_literature
@@ -8,24 +7,7 @@ from .agents.retrieval_agent import retrieve_documents
 from .agents.summary_agent import generate_summary
 
 
-class GraphState(TypedDict):
-    """State type for LangGraph - mirrors AgentState fields."""
-
-    query: str
-    max_results: int
-    model: str
-    search_results: list
-    search_metadata: dict
-    documents: list
-    retrieval_stats: dict
-    summary: str
-    references: list
-    literature_section: str
-    generation_metadata: dict
-    errors: list
-
-
-def should_continue_after_search(state: GraphState) -> str:
+def should_continue_after_search(state: AgentState) -> str:
     """
     Decide whether to continue after search based on results.
 
@@ -35,12 +17,12 @@ def should_continue_after_search(state: GraphState) -> str:
     Returns:
         Next node name: "retrieve" or "end"
     """
-    if not state.get("search_results"):
+    if not state.search_results:
         return "end"
     return "retrieve"
 
 
-def should_continue_after_retrieval(state: GraphState) -> str:
+def should_continue_after_retrieval(state: AgentState) -> str:
     """
     Decide whether to continue after retrieval based on results.
 
@@ -50,17 +32,17 @@ def should_continue_after_retrieval(state: GraphState) -> str:
     Returns:
         Next node name: "summarize" or "end"
     """
-    if not state.get("documents"):
+    if not state.documents:
         return "end"
     return "summarize"
 
 
-def create_literature_graph() -> StateGraph:
+def create_literature_graph():
     """
     Create and compile the LangGraph workflow.
 
     Returns:
-        Compiled StateGraph ready for execution
+        Compiled graph ready for execution
 
     Workflow:
         START -> search -> retrieve -> summarize -> END
@@ -121,6 +103,10 @@ def run_literature_search(
 
     # Create and run graph
     graph = create_literature_graph()
-    final_state = graph.invoke(initial_state)
+    result = graph.invoke(initial_state)
 
-    return final_state
+    # Convert result back to AgentState if needed
+    if isinstance(result, AgentState):
+        return result
+    else:
+        return AgentState(**result)  # type: ignore

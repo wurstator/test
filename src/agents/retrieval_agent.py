@@ -2,12 +2,11 @@
 
 import time
 from ..models.state import AgentState, RetrievalStats
-from ..models.paper import Document
 from ..skills.api import fetch_pmc_fulltext, fetch_abstract
 from ..skills.document import create_document_from_paper
 
 
-def retrieve_documents(state: AgentState) -> dict:
+def retrieve_documents(state: AgentState) -> AgentState:
     """
     Retrieve full text or abstracts for search results.
 
@@ -15,7 +14,7 @@ def retrieve_documents(state: AgentState) -> dict:
         state: Current agent state containing search_results
 
     Returns:
-        State update dict with documents and retrieval_stats
+        Updated AgentState with documents and retrieval_stats
 
     Strategy:
         1. For PubMed papers: Try PMC full text -> fallback to abstract
@@ -86,8 +85,10 @@ def retrieve_documents(state: AgentState) -> dict:
         execution_time_seconds=execution_time,
     )
 
-    return {
-        "documents": documents,
-        "retrieval_stats": retrieval_stats,
-        "errors": errors,
-    }
+    return state.model_copy(
+        update={
+            "documents": documents,
+            "retrieval_stats": retrieval_stats,
+            "errors": state.errors + errors,
+        }
+    )

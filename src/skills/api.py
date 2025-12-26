@@ -30,10 +30,10 @@ def search_pubmed(query: str, max_results: int = 20) -> list[Paper]:
     try:
         # Search for PMIDs
         handle = Entrez.esearch(db="pubmed", term=query, retmax=max_results)
-        record = Entrez.read(handle)
+        record = Entrez.read(handle)  # type: ignore
         handle.close()
 
-        pmids = record["IdList"]
+        pmids = record["IdList"]  # type: ignore
 
         if not pmids:
             return papers
@@ -111,10 +111,11 @@ def search_scholar(query: str, max_results: int = 20) -> list[Paper]:
             if isinstance(authors, str):
                 authors = [authors]
             abstract = bib.get("abstract", None)
-            year = bib.get("pub_year", None)
-            if year:
+            year_raw = bib.get("pub_year", None)
+            year: int | None = None
+            if year_raw:
                 try:
-                    year = int(year)
+                    year = int(year_raw)
                 except ValueError:
                     year = None
 

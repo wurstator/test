@@ -2,12 +2,12 @@
 
 import time
 from ..models.state import AgentState, GenerationMetadata
-from ..skills.llm import call_llm_with_template, format_prompt, load_prompt_template
+from ..skills.llm import call_llm_with_template
 from ..skills.citation import create_citation, generate_references_section
 from ..skills.document import truncate_content
 
 
-def generate_summary(state: AgentState) -> dict:
+def generate_summary(state: AgentState) -> AgentState:
     """
     Generate comprehensive summary from retrieved documents.
 
@@ -15,7 +15,7 @@ def generate_summary(state: AgentState) -> dict:
         state: Current agent state with documents and query
 
     Returns:
-        State update dict with summary, references, literature_section,
+        Updated AgentState with summary, references, literature_section,
         and generation_metadata
 
     Process:
@@ -29,18 +29,20 @@ def generate_summary(state: AgentState) -> dict:
     documents = state.documents
     query = state.query
     model = state.model
-    errors = []
+    errors: list[str] = []
 
     if not documents:
-        return {
-            "summary": "No documents were retrieved. Unable to generate summary.",
-            "references": [],
-            "literature_section": "## References\n\nNo references available.",
-            "generation_metadata": GenerationMetadata(
-                model_used=model, execution_time_seconds=0.0
-            ),
-            "errors": ["No documents available for summarization"],
-        }
+        return state.model_copy(
+            update={
+                "summary": "No documents were retrieved. Unable to generate summary.",
+                "references": [],
+                "literature_section": "## References\n\nNo references available.",
+                "generation_metadata": GenerationMetadata(
+                    model_used=model, execution_time_seconds=0.0
+                ),
+                "errors": state.errors + ["No documents available for summarization"],
+            }
+        )
 
     # Step 1: Format documents for LLM
     doc_texts = []
@@ -91,8 +93,6 @@ def generate_summary(state: AgentState) -> dict:
     try:
         # Option 1: Use LLM to format references (more consistent)
         citations_text = "\n\n".join([c.citation_text for c in citations])
-        template = load_prompt_template("literature_section")
-        lit_prompt = format_prompt(template, citations=citations_text)
 
         lit_section, _ = call_llm_with_template(
             template_name="literature_section",
@@ -119,10 +119,12 @@ def generate_summary(state: AgentState) -> dict:
         execution_time_seconds=execution_time,
     )
 
-    return {
-        "summary": summary,
-        "references": citations,
-        "literature_section": lit_section,
-        "generation_metadata": gen_metadata,
-        "errors": errors,
-    }
+    return state.model_copy(
+        update={
+            "summary": summary,
+            "references": citations,
+            "literature_section": lit_section,
+            "generation_metadata": gen_metadata,
+            "errors": state.errors + errors,
+        }
+    )

@@ -32,7 +32,9 @@ class Config(BaseModel):
     entrez_email: str = Field(
         default="research@example.com", description="Email for NCBI Entrez API"
     )
-    request_timeout: int = Field(default=30, description="HTTP request timeout (seconds)")
+    request_timeout: int = Field(
+        default=30, description="HTTP request timeout (seconds)"
+    )
 
     # Document Processing
     max_document_words: int = Field(
@@ -43,13 +45,17 @@ class Config(BaseModel):
     )
 
     # Output Settings
-    citation_style: str = Field(default="apa", description="Citation style (apa, chicago, etc.)")
+    citation_style: str = Field(
+        default="apa", description="Citation style (apa, chicago, etc.)"
+    )
     save_results: bool = Field(default=False, description="Save results to disk")
     output_dir: Path = Field(default=Path("./output"), description="Output directory")
 
     # Debug Settings
     verbose: bool = Field(default=False, description="Enable verbose logging")
-    litellm_verbose: bool = Field(default=False, description="Enable LiteLLM verbose mode")
+    litellm_verbose: bool = Field(
+        default=False, description="Enable LiteLLM verbose mode"
+    )
 
     @classmethod
     def from_env(cls) -> "Config":
