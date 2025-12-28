@@ -1,6 +1,7 @@
 """Main entry point for scientific literature agent."""
 
 import sys
+from datetime import datetime
 from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
@@ -86,30 +87,21 @@ def format_output(result: AgentState) -> str:
     return "\n".join(sections)
 
 
-def save_output(content: str, query: str) -> Path:
+def save_output(content: str) -> Path:
     """
-    Save output to a file.
+    Save output to a timestamped folder.
 
     Args:
         content: Formatted output content
-        query: Original search query
 
     Returns:
         Path to saved file
     """
-    output_dir = config.output_dir
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_dir = config.output_dir / f"output_{timestamp}"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Create filename from query
-    filename = "".join(c if c.isalnum() else "_" for c in query[:50])
-    output_path = output_dir / f"{filename}.md"
-
-    # Handle duplicate filenames
-    counter = 1
-    while output_path.exists():
-        output_path = output_dir / f"{filename}_{counter}.md"
-        counter += 1
-
+    output_path = output_dir / "report.md"
     output_path.write_text(content, encoding="utf-8")
     return output_path
 
@@ -174,12 +166,11 @@ def main():
         console.print("\n")
         console.print(Markdown(output))
 
-        # Save if configured
-        if config.save_results:
-            output_path = save_output(output, query)
-            console.print(
-                f"\n[green]✓[/green] Results saved to: [blue]{output_path}[/blue]"
-            )
+        # Save output
+        output_path = save_output(output)
+        console.print(
+            f"\n[green]✓[/green] Results saved to: [blue]{output_path}[/blue]"
+        )
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Search cancelled by user.[/yellow]")
