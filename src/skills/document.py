@@ -1,7 +1,6 @@
 """Document processing utilities."""
 
 from pathlib import Path
-from typing import Optional
 import requests
 from pypdf import PdfReader
 from ..models.paper import Paper, Document

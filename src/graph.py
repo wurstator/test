@@ -1,7 +1,8 @@
 """LangGraph workflow definition for scientific literature agent."""
 
-from typing import TypedDict
+from typing import TypedDict, Any
 from langgraph.graph import StateGraph, END
+from langgraph.graph.state import CompiledStateGraph
 from .models.state import AgentState
 from .agents.search_agent import search_literature
 from .agents.retrieval_agent import retrieve_documents
@@ -55,7 +56,7 @@ def should_continue_after_retrieval(state: GraphState) -> str:
     return "summarize"
 
 
-def create_literature_graph() -> StateGraph:
+def create_literature_graph() -> CompiledStateGraph[Any]:
     """
     Create and compile the LangGraph workflow.
 
@@ -121,6 +122,7 @@ def run_literature_search(
 
     # Create and run graph
     graph = create_literature_graph()
-    final_state = graph.invoke(initial_state)
+    result_dict = graph.invoke(initial_state)
 
-    return final_state
+    # Convert dict result back to AgentState for proper Pydantic state management
+    return AgentState(**result_dict)

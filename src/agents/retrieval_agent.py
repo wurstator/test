@@ -2,7 +2,6 @@
 
 import time
 from ..models.state import AgentState, RetrievalStats
-from ..models.paper import Document
 from ..skills.api import fetch_pmc_fulltext, fetch_abstract
 from ..skills.document import create_document_from_paper
 

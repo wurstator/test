@@ -6,13 +6,14 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.markdown import Markdown
 from .graph import run_literature_search
+from .models.state import AgentState
 from .config import config
 
 
 console = Console()
 
 
-def format_output(result) -> str:
+def format_output(result: AgentState) -> str:
     """
     Format the agent result for display.
 
@@ -25,13 +26,13 @@ def format_output(result) -> str:
     sections = []
 
     # Header
-    sections.append(f"# Literature Search Results\n")
+    sections.append("# Literature Search Results\n")
     sections.append(f"**Query**: {result.query}\n")
 
     # Search Statistics
     if result.search_metadata:
         meta = result.search_metadata
-        sections.append(f"\n## Search Statistics")
+        sections.append("\n## Search Statistics")
         sections.append(f"- PubMed results: {meta.pubmed_count}")
         sections.append(f"- Google Scholar results: {meta.scholar_count}")
         sections.append(f"- Total unique papers: {meta.total_results}")
@@ -43,7 +44,7 @@ def format_output(result) -> str:
     # Retrieval Statistics
     if result.retrieval_stats:
         stats = result.retrieval_stats
-        sections.append(f"\n## Retrieval Statistics")
+        sections.append("\n## Retrieval Statistics")
         sections.append(f"- Documents attempted: {stats.attempted}")
         sections.append(f"- Full text retrieved: {stats.fulltext_retrieved}")
         sections.append(f"- Abstracts retrieved: {stats.abstract_retrieved}")
@@ -55,18 +56,18 @@ def format_output(result) -> str:
 
     # Summary
     if result.summary:
-        sections.append(f"\n---\n")
+        sections.append("\n---\n")
         sections.append(result.summary)
 
     # Literature Section
     if result.literature_section:
-        sections.append(f"\n\n---\n")
+        sections.append("\n\n---\n")
         sections.append(result.literature_section)
 
     # Generation Statistics
     if result.generation_metadata:
         meta = result.generation_metadata
-        sections.append(f"\n\n## Generation Statistics")
+        sections.append("\n\n## Generation Statistics")
         sections.append(f"- Model: {meta.model_used}")
         if meta.total_tokens:
             sections.append(f"- Total tokens: {meta.total_tokens:,}")
@@ -78,7 +79,7 @@ def format_output(result) -> str:
 
     # Errors
     if result.errors:
-        sections.append(f"\n\n## Errors/Warnings")
+        sections.append("\n\n## Errors/Warnings")
         for error in result.errors:
             sections.append(f"- {error}")
 

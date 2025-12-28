@@ -2,7 +2,7 @@
 
 import time
 from ..models.state import AgentState, GenerationMetadata
-from ..skills.llm import call_llm_with_template, format_prompt, load_prompt_template
+from ..skills.llm import call_llm_with_template
 from ..skills.citation import create_citation, generate_references_section
 from ..skills.document import truncate_content
 
@@ -91,8 +91,6 @@ def generate_summary(state: AgentState) -> dict:
     try:
         # Option 1: Use LLM to format references (more consistent)
         citations_text = "\n\n".join([c.citation_text for c in citations])
-        template = load_prompt_template("literature_section")
-        lit_prompt = format_prompt(template, citations=citations_text)
 
         lit_section, _ = call_llm_with_template(
             template_name="literature_section",

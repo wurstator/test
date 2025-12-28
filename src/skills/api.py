@@ -3,12 +3,34 @@
 import time
 from typing import Optional
 from Bio import Entrez, Medline
-from scholarly import scholarly
+from scholarly import scholarly, ProxyGenerator
 from ..models.paper import Paper
 
 
 # Set email for Entrez (required by NCBI)
 Entrez.email = "research@example.com"  # Should be configurable
+
+
+# Configure scholarly with free proxy to avoid Google blocks
+_proxy_configured = False
+
+
+def _ensure_scholar_proxy() -> bool:
+    """Configure scholarly with a free proxy if not already done."""
+    global _proxy_configured
+    if _proxy_configured:
+        return True
+
+    try:
+        pg = ProxyGenerator()
+        if pg.FreeProxies():
+            scholarly.use_proxy(pg)
+            _proxy_configured = True
+            return True
+    except Exception as e:
+        print(f"Warning: Failed to configure scholarly proxy: {e}")
+
+    return False
 
 
 def search_pubmed(query: str, max_results: int = 20) -> list[Paper]:
@@ -33,7 +55,7 @@ def search_pubmed(query: str, max_results: int = 20) -> list[Paper]:
         record = Entrez.read(handle)
         handle.close()
 
-        pmids = record["IdList"]
+        pmids = record["IdList"]  # type: ignore[index]
 
         if not pmids:
             return papers
@@ -91,10 +113,13 @@ def search_scholar(query: str, max_results: int = 20) -> list[Paper]:
         List of Paper objects with metadata
 
     Note:
-        Google Scholar may rate limit requests. This function includes
-        delays to avoid being blocked.
+        Uses free proxy to avoid Google Scholar blocks.
+        Includes delays between requests to avoid rate limiting.
     """
     papers = []
+
+    # Ensure proxy is configured
+    _ensure_scholar_proxy()
 
     try:
         search_query = scholarly.search_pubs(query)
@@ -111,12 +136,13 @@ def search_scholar(query: str, max_results: int = 20) -> list[Paper]:
             if isinstance(authors, str):
                 authors = [authors]
             abstract = bib.get("abstract", None)
-            year = bib.get("pub_year", None)
-            if year:
+            year_raw = bib.get("pub_year", None)
+            year: int | None = None
+            if year_raw:
                 try:
-                    year = int(year)
+                    year = int(year_raw)
                 except ValueError:
-                    year = None
+                    pass
 
             # Get URL
             url = result.get("pub_url") or result.get("eprint_url")
@@ -137,7 +163,7 @@ def search_scholar(query: str, max_results: int = 20) -> list[Paper]:
             count += 1
 
             # Polite delay to avoid rate limiting
-            time.sleep(2)
+            time.sleep(1)
 
     except Exception as e:
         # Don't raise on Scholar errors, just return what we got
