@@ -1,0 +1,12 @@
+---
+// A clickable card for one article or blog post.
+import { topicById } from '../topics';
+interface Props { href: string; title: string; summary: string; topic: string; date: Date; level?: string }
+const { href, title, summary, topic, date, level } = Astro.props;
+---
+<a class="card" {href}>
+  <div class="meta">{topicById(topic).icon} {topicById(topic).name} · {date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
+  <h3>{title}</h3>
+  <p>{summary}</p>
+  {level && <p style="margin-top:.6rem"><span class="pill">{level}</span></p>}
+</a>

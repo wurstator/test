@@ -1,0 +1,37 @@
+---
+// Page shell: <head>, header, footer. Every page wraps its content in this.
+import '../styles/global.css';
+interface Props { title: string; description?: string; wide?: boolean }
+const { title, description = 'Educational articles and a blog on microbial biotechnology.', wide = false } = Astro.props;
+const full = title === 'Power to the Microbes' ? title : `${title} · Power to the Microbes`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{full}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="Power to the Microbes" href="/rss.xml" />
+  </head>
+  <body>
+    <header class="site">
+      <div class="wrap">
+        <a class="logo" href="/">Power to the <span>Microbes</span></a>
+        <nav>
+          <a href="/articles/">Articles</a>
+          <a href="/blog/">Blog</a>
+          <a href="/about/">About</a>
+          <a href="/rss.xml">RSS</a>
+        </nav>
+      </div>
+    </header>
+    <main class:list={['wrap', { wide }]}>
+      <slot />
+    </main>
+    <footer class="site">
+      <div class="wrap">© {new Date().getFullYear()} Power to the Microbes · Educational content, not medical advice.</div>
+    </footer>
+  </body>
+</html>

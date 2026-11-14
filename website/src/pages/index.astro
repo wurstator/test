@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { TOPICS } from '../topics';
+
+// Latest published items from each collection.
+const latest = async (name: 'articles' | 'blog') =>
+  (await getCollection(name, (e) => !e.data.draft)).sort((a, b) => +b.data.date - +a.data.date).slice(0, 3);
+const articles = await latest('articles');
+const posts = await latest('blog');
+---
+<Base title="Power to the Microbes" wide>
+  <section class="hero">
+    <h1>Power to the <span style="color:var(--accent)">Microbes</span></h1>
+    <p>Clear, curious explanations of microbial biotechnology — from medicine and the environment to food, farming and synthetic biology.</p>
+  </section>
+
+  <section>
+    <h2>Explore by topic</h2>
+    <div class="grid">
+      {TOPICS.map((t) => (
+        <a class="card" href={`/topics/${t.id}/`}><div style="font-size:1.8rem">{t.icon}</div><h3>{t.name}</h3><p>{t.blurb}</p></a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>Latest articles</h2>
+    <div class="grid">
+      {articles.map((a) => <PostCard href={`/articles/${a.id}/`} {...a.data} />)}
+    </div>
+  </section>
+
+  <section>
+    <h2>From the blog</h2>
+    <div class="grid">
+      {posts.map((p) => <PostCard href={`/blog/${p.id}/`} {...p.data} />)}
+    </div>
+  </section>
+</Base>

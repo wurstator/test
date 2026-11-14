@@ -1,0 +1,20 @@
+---
+// Shared layout for a single article or blog post (rendered Markdown in <slot />).
+import Base from '../layouts/Base.astro';
+import { topicById } from '../topics';
+interface Props { title: string; summary: string; topic: string; date: Date; tags: string[]; level: string }
+const { title, summary, topic, date, tags, level } = Astro.props;
+const t = topicById(topic);
+---
+<Base title={title} description={summary}>
+  <article class="prose">
+    <p class="meta" style="margin-top:2rem">
+      <a href={`/topics/${t.id}/`}>{t.icon} {t.name}</a> · {date.toLocaleDateString('en-GB', { dateStyle: 'long' })} · <span class="pill">{level}</span>
+    </p>
+    <h1>{title}</h1>
+    <p style="color:var(--muted);font-size:1.15rem">{summary}</p>
+    <slot />
+    {tags.length > 0 && <p class="meta">Tags: {tags.join(', ')}</p>}
+    {topic === 'medical' && <p class="note">This content is for education only and is not medical advice.</p>}
+  </article>
+</Base>

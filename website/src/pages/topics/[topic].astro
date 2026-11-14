@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { TOPICS } from '../../topics';
+
+export const getStaticPaths = () => TOPICS.map((t) => ({ params: { topic: t.id }, props: { t } }));
+const { t } = Astro.props;
+
+// Merge articles + blog posts for this topic, newest first.
+const all = [
+  ...(await getCollection('articles', (e) => !e.data.draft)).map((e) => ({ e, base: 'articles' })),
+  ...(await getCollection('blog', (e) => !e.data.draft)).map((e) => ({ e, base: 'blog' })),
+].filter((x) => x.e.data.topic === t.id).sort((a, b) => +b.e.data.date - +a.e.data.date);
+---
+<Base title={t.name} description={t.blurb} wide>
+  <section class="hero"><h1>{t.icon} {t.name}</h1><p>{t.blurb}</p></section>
+  {all.length === 0 ? <p>Content coming soon.</p> : (
+    <div class="grid">{all.map(({ e, base }) => <PostCard href={`/${base}/${e.id}/`} {...e.data} />)}</div>
+  )}
+</Base>

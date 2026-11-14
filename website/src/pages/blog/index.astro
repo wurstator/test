@@ -1,0 +1,12 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+const items = (await getCollection('blog', (e) => !e.data.draft)).sort((a, b) => +b.data.date - +a.data.date);
+---
+<Base title="Blog" description="News, paper summaries and commentary." wide>
+  <section class="hero"><h1>Blog</h1><p>News, paper summaries and commentary.</p></section>
+  <div class="grid">
+    {items.map((i) => <PostCard href={`/blog/${i.id}/`} {...i.data} />)}
+  </div>
+</Base>
